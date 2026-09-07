@@ -142,6 +142,14 @@ def process_pdf(file_path: str, doc_id: int, db: Session):
             
     except Exception as e:
         print(f"Error processing document {doc_id}: {e}")
+        db_fail = models.Failure(
+            doc_id=doc_id,
+            error_type="DocumentProcessingError",
+            raw_output=str(e),
+            context="System crashed while trying to parse or process the PDF file natively."
+        )
+        db.add(db_fail)
+        db.commit()
 
 @app.get("/api/facts")
 def get_facts(db: Session = Depends(database.get_db)):
@@ -203,15 +211,3 @@ def get_failures(db: Session = Depends(database.get_db)):
             "document": doc.filename if doc else "Unknown"
         })
     return result
-
-@app.post("/api/simulate-failure")
-def simulate_failure(db: Session = Depends(database.get_db)):
-    db_fail = models.Failure(
-        doc_id=None,
-        error_type="JSONDecodeError",
-        raw_output="Unterminated string starting at: line 1 column 15 (char 14)",
-        context="Failed to parse LLM relationship output as JSON."
-    )
-    db.add(db_fail)
-    db.commit()
-    return {"message": "Failure simulated"}

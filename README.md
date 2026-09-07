@@ -53,9 +53,9 @@ The system is built to ingest PDFs, dynamically extract numerical and semantic f
 - *LLM Cost vs Precision*: To avoid hitting massive context windows or hallucination, I keep chunking simple for this prototype rather than building complex RAG pipelines. 
 
 ## Limitations and Next Steps
-1. **Large Document Handling**: The system currently limits text processing chunks to avoid LLM context overflow. Next step: Implement smart chunking or a full RAG (Retrieval-Augmented Generation) pipeline.
-2. **Fact Resolution**: If the LLM generates a hallucinated fact, the system doesn't automatically self-correct. Next step: Add a human-in-the-loop validation UI where users can edit/reject facts.
-3. **Graph Traversal**: The UI currently shows a list of relationships. Next step: Integrate a visual graph library (like D3.js or Cytoscape) to visually map out knowledge webs.
+1. **Layout and Extraction Failures**: As demonstrated in the failure case in the video, standard text parsers (like PyMuPDF) completely scramble complex dual-column financial tables and dense formatting. This results in the LLM receiving a wall of corrupted text, causing it to fail parsing entirely or hallucinate numbers. **Next step**: Integrate a Vision-Language Model (VLM) for layout-aware parsing, or use specialized OCR models (like LayoutLM) before passing text to Gemini.
+2. **Large Document Handling**: The system currently limits text processing chunks to avoid LLM context overflow. Next step: Implement smart chunking or a full RAG (Retrieval-Augmented Generation) pipeline.
+3. **Fact Resolution**: If the LLM generates a hallucinated fact that doesn't trigger a hard JSON crash, the system doesn't automatically self-correct. Next step: Add a human-in-the-loop validation UI where users can edit/reject facts.
 
 ## Additional Notes
 - Used a premium dark-mode UI design to make the discovery of contradictions feel like a professional analyst tool.

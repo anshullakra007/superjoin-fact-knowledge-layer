@@ -146,10 +146,4 @@ document.addEventListener('DOMContentLoaded', () => {
             container.appendChild(card);
         });
     }
-
-    window.simulateFailure = function() {
-        fetch('/api/simulate-failure', { method: 'POST' })
-            .then(() => fetchData())
-            .catch(err => console.error(err));
-    };
 });
