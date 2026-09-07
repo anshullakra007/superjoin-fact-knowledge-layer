@@ -4,6 +4,9 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 import os
 import shutil
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from . import models, database, extraction
 
