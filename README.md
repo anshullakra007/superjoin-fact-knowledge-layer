@@ -1,6 +1,6 @@
-# Fact Knowledge Layer 🧠
+# Fact Knowledge Layer
 
-Hey there! 👋 This is my submission for Superjoin's Engineering Intern role. 
+Hello! This is my submission for Superjoin's Engineering Intern role. 
 
 The goal here was to build a system that doesn't just blindly ingest PDFs, but actually *understands* them. This application extracts numerical and semantic facts, and then acts like an automated analyst—cross-referencing those facts against everything else in the system to discover corroborations, flag contradictions, and reconcile tricky context-based discrepancies using LLMs.
 
