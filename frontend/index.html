@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fact Knowledge Layer - Superjoin</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="glass-container main-layout">
+        <header>
+            <h1>Fact Knowledge Layer</h1>
+            <p>Upload PDFs. Extract facts. Discover relationships.</p>
+        </header>
+
+        <main>
+            <section class="upload-section glass-panel">
+                <h2>Upload Document</h2>
+                <div class="upload-area" id="drop-zone">
+                    <p>Drag & Drop your PDF here</p>
+                    <input type="file" id="file-input" accept="application/pdf" hidden>
+                    <button class="btn" onclick="document.getElementById('file-input').click()">Browse Files</button>
+                </div>
+                <div id="upload-status"></div>
+            </section>
+
+            <section class="documents-section glass-panel">
+                <h2>Uploaded Documents</h2>
+                <ul id="doc-list" class="styled-list"></ul>
+            </section>
+            
+            <section class="relationships-section glass-panel">
+                <h2>Cross-Check Insights</h2>
+                <div class="insights-container" id="relationships-list">
+                    <div class="empty-state">Upload multiple documents to find relationships.</div>
+                </div>
+            </section>
+
+            <section class="facts-section glass-panel">
+                <h2>Extracted Facts</h2>
+                <div class="table-container">
+                    <table id="facts-table">
+                        <thead>
+                            <tr>
+                                <th>Fact Statement</th>
+                                <th>Evidence</th>
+                                <th>Source</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Facts will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
