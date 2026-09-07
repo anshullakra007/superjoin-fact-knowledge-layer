@@ -54,11 +54,13 @@ def extract_facts_with_llm(text: str) -> list:
         # Parse the JSON response
         facts = json.loads(response.text)
         if isinstance(facts, list):
-            return facts
-        return []
+            return {"success": True, "data": facts}
+        return {"success": False, "error_type": "InvalidFormat", "raw_output": response.text, "context": "Expected a JSON list of facts."}
+    except json.JSONDecodeError:
+        return {"success": False, "error_type": "JSONDecodeError", "raw_output": response.text, "context": "Failed to parse LLM output as JSON."}
     except Exception as e:
         print(f"Error during LLM extraction: {e}")
-        return []
+        return {"success": False, "error_type": "Exception", "raw_output": str(e), "context": "System failure during LLM request."}
 
 def analyze_relationships_with_llm(new_facts: list, existing_facts: list) -> list:
     """Compares new facts against existing facts to find relationships."""
@@ -77,8 +79,8 @@ def analyze_relationships_with_llm(new_facts: list, existing_facts: list) -> lis
     
     Compare the New Facts against the Existing Facts. Identify if any New Fact:
     1. "corroborates": Directly supports or confirms an Existing Fact.
-    2. "contradicts": Directly contradicts an Existing Fact (e.g., different revenue numbers for the same period).
-    3. "reconciled": Initially appears to contradict, but can be explained by context (e.g., different time periods, different units, standalone vs consolidated).
+    2. "contradicts": Directly contradicts an Existing Fact (e.g., two completely different statements about the exact same thing in the exact same time period/unit).
+    3. "reconciled": Initially appears to contradict, but can be explained by time or context. For example: if a revenue figure is ₹27,805.75 million for Fiscal 2020 in one document, and ₹81,415 million for FY24 in another, this is an apparent contradiction explained by time/context, and MUST be flagged as "reconciled" (Case 3), not a genuine contradiction. Also consider units (e.g. millions vs billions) or scope (consolidated vs standalone).
     
     Existing Facts (ID: Statement):
     """
@@ -113,8 +115,10 @@ def analyze_relationships_with_llm(new_facts: list, existing_facts: list) -> lis
         )
         relationships = json.loads(response.text)
         if isinstance(relationships, list):
-            return relationships
-        return []
+            return {"success": True, "data": relationships}
+        return {"success": False, "error_type": "InvalidFormat", "raw_output": response.text, "context": "Relationships output was not a list."}
+    except json.JSONDecodeError:
+        return {"success": False, "error_type": "JSONDecodeError", "raw_output": response.text, "context": "Failed to parse LLM relationship output as JSON."}
     except Exception as e:
         print(f"Error during LLM relationship analysis: {e}")
-        return []
+        return {"success": False, "error_type": "Exception", "raw_output": str(e), "context": "System failure during relationship analysis."}

@@ -35,6 +35,16 @@
                     <div class="empty-state">Upload multiple documents to find relationships.</div>
                 </div>
             </section>
+            
+            <section class="diagnostics-section glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>System Diagnostics (Ambiguity Log)</h2>
+                    <button class="btn" style="background: var(--diagnostic); padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="simulateFailure()">Simulate Failure</button>
+                </div>
+                <div class="insights-container" id="diagnostics-list">
+                    <div class="empty-state">No failures or ambiguities logged.</div>
+                </div>
+            </section>
 
             <section class="facts-section glass-panel">
                 <h2>Extracted Facts</h2>

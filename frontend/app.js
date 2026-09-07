@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('/api/documents').then(r => r.json()).then(renderDocuments);
         fetch('/api/facts').then(r => r.json()).then(renderFacts);
         fetch('/api/relationships').then(r => r.json()).then(renderRelationships);
+        fetch('/api/failures').then(r => r.json()).then(renderFailures);
     }
 
     function renderDocuments(docs) {
@@ -92,8 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${fact.statement}</td>
-                <td><small>"${fact.evidence}"</small></td>
-                <td>${fact.document} (pg ${fact.page_number})</td>
+                <td><div class="evidence-quote">"${fact.evidence}"</div></td>
+                <td><strong>${fact.document}</strong> (pg ${fact.page_number})</td>
             `;
             tbody.appendChild(tr);
         });
@@ -102,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderRelationships(rels) {
         const container = document.getElementById('relationships-list');
         if (rels.length === 0) {
-            // Keep empty state if nothing
             return;
         }
         container.innerHTML = '';
@@ -112,12 +112,44 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="rel-badge">${rel.type}</div>
                 <div class="rel-facts">
-                    <div><strong>Fact 1 (${rel.fact1.document}):</strong> ${rel.fact1.statement}</div>
-                    <div><strong>Fact 2 (${rel.fact2.document}):</strong> ${rel.fact2.statement}</div>
+                    <div>
+                        <strong>Fact 1 (${rel.fact1.document}):</strong> ${rel.fact1.statement}
+                    </div>
+                    <div>
+                        <strong>Fact 2 (${rel.fact2.document}):</strong> ${rel.fact2.statement}
+                    </div>
                 </div>
-                <div class="rel-explanation">${rel.explanation}</div>
+                <div class="rel-explanation"><strong>LLM Reasoning:</strong> ${rel.explanation}</div>
             `;
             container.appendChild(card);
         });
     }
+
+    function renderFailures(failures) {
+        const container = document.getElementById('diagnostics-list');
+        if (failures.length === 0) {
+            return;
+        }
+        container.innerHTML = '';
+        failures.forEach(fail => {
+            const card = document.createElement('div');
+            card.className = `relationship-card diagnostic`;
+            card.innerHTML = `
+                <div class="rel-badge">Failure: ${fail.error_type}</div>
+                <div class="rel-facts">
+                    <div><strong>Document:</strong> ${fail.document}</div>
+                    <div><strong>Context:</strong> ${fail.context}</div>
+                    <div class="evidence-quote">${fail.raw_output.substring(0, 300)}${fail.raw_output.length > 300 ? '...' : ''}</div>
+                </div>
+                <div class="rel-explanation">System diagnostic logged successfully for resilience.</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    window.simulateFailure = function() {
+        fetch('/api/simulate-failure', { method: 'POST' })
+            .then(() => fetchData())
+            .catch(err => console.error(err));
+    };
 });

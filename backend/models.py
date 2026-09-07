@@ -9,6 +9,18 @@ class Document(Base):
     filename = Column(String, index=True)
     
     facts = relationship("Fact", back_populates="document")
+    failures = relationship("Failure", back_populates="document")
+
+class Failure(Base):
+    __tablename__ = "failures"
+
+    id = Column(Integer, primary_key=True, index=True)
+    doc_id = Column(Integer, ForeignKey("documents.id"))
+    error_type = Column(String)
+    raw_output = Column(Text)
+    context = Column(Text)
+    
+    document = relationship("Document", back_populates="failures")
 
 class Fact(Base):
     __tablename__ = "facts"

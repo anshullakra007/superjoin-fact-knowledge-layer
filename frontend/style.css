@@ -9,6 +9,7 @@
     --success: #00b894;
     --danger: #d63031;
     --warning: #fbc531;
+    --diagnostic: #9b59b6;
 }
 
 * {
@@ -32,12 +33,13 @@ body {
     max-width: 1400px;
     display: grid;
     grid-template-columns: 1fr 2fr;
-    grid-template-rows: auto 1fr 1fr;
+    grid-template-rows: auto 1fr 1fr 1fr;
     gap: 1.5rem;
     grid-template-areas: 
         "header header"
         "upload insights"
-        "docs facts";
+        "docs diagnostics"
+        "facts facts";
 }
 
 header {
@@ -84,6 +86,7 @@ header h1 {
 .upload-section { grid-area: upload; }
 .documents-section { grid-area: docs; }
 .relationships-section { grid-area: insights; }
+.diagnostics-section { grid-area: diagnostics; }
 .facts-section { grid-area: facts; }
 
 /* Upload Area */
@@ -196,6 +199,7 @@ td:first-child {
 .relationship-card.corroborates { border-left-color: var(--success); }
 .relationship-card.contradicts { border-left-color: var(--danger); }
 .relationship-card.reconciled { border-left-color: var(--warning); }
+.relationship-card.diagnostic { border-left-color: var(--diagnostic); }
 
 .rel-badge {
     display: inline-block;
@@ -210,6 +214,7 @@ td:first-child {
 .corroborates .rel-badge { background: rgba(0, 184, 148, 0.2); color: var(--success); }
 .contradicts .rel-badge { background: rgba(214, 48, 49, 0.2); color: var(--danger); }
 .reconciled .rel-badge { background: rgba(251, 197, 49, 0.2); color: var(--warning); }
+.diagnostic .rel-badge { background: rgba(155, 89, 182, 0.2); color: var(--diagnostic); }
 
 .rel-facts {
     display: flex;
@@ -218,6 +223,16 @@ td:first-child {
     margin-bottom: 0.75rem;
     font-size: 0.9rem;
 }
+
+.evidence-quote {
+    background: rgba(255,255,255,0.05);
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border-left: 2px solid var(--accent-color);
+    font-family: monospace;
+    margin-top: 0.25rem;
+}
+
 .rel-explanation {
     font-size: 0.85rem;
     color: var(--text-secondary);

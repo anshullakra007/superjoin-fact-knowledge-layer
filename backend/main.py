@@ -61,8 +61,19 @@ def process_pdf(file_path: str, doc_id: int, db: Session):
                 continue
             
             # Very basic chunking to not overwhelm if page is huge
-            facts_data = extraction.extract_facts_with_llm(text[:20000]) # Cap text length
+            facts_response = extraction.extract_facts_with_llm(text[:20000]) # Cap text length
             
+            if not facts_response.get("success"):
+                db_fail = models.Failure(
+                    doc_id=doc_id,
+                    error_type=facts_response.get("error_type"),
+                    raw_output=facts_response.get("raw_output"),
+                    context=facts_response.get("context")
+                )
+                db.add(db_fail)
+                continue
+                
+            facts_data = facts_response.get("data", [])
             for fact_data in facts_data:
                 statement = fact_data.get("statement", "")
                 if not statement:
@@ -93,30 +104,40 @@ def process_pdf(file_path: str, doc_id: int, db: Session):
                     "statement": fact.statement
                 })
                 
-            relationships = extraction.analyze_relationships_with_llm(new_facts_for_llm, existing_facts)
+            relationships_response = extraction.analyze_relationships_with_llm(new_facts_for_llm, existing_facts)
             
-            for rel in relationships:
-                existing_id = rel.get("existing_fact_id")
-                new_id = rel.get("new_fact_id")
-                
-                # Check if new_id is our custom format "NEW_idx" or if LLM returned actual ID
-                if isinstance(new_id, str) and new_id.startswith("NEW_"):
-                    try:
-                        idx = int(new_id.split("_")[1])
-                        actual_new_id = new_db_facts[idx].id
-                    except:
-                        actual_new_id = None
-                else:
-                    actual_new_id = new_id
+            if not relationships_response.get("success"):
+                db_fail = models.Failure(
+                    doc_id=doc_id,
+                    error_type=relationships_response.get("error_type"),
+                    raw_output=relationships_response.get("raw_output"),
+                    context=relationships_response.get("context")
+                )
+                db.add(db_fail)
+            else:
+                relationships = relationships_response.get("data", [])
+                for rel in relationships:
+                    existing_id = rel.get("existing_fact_id")
+                    new_id = rel.get("new_fact_id")
                     
-                if existing_id and actual_new_id:
-                    db_rel = models.Relationship(
-                        fact1_id=existing_id,
-                        fact2_id=actual_new_id,
-                        relationship_type=rel.get("relationship_type", "unknown"),
-                        explanation=rel.get("explanation", "")
-                    )
-                    db.add(db_rel)
+                    # Check if new_id is our custom format "NEW_idx" or if LLM returned actual ID
+                    if isinstance(new_id, str) and new_id.startswith("NEW_"):
+                        try:
+                            idx = int(new_id.split("_")[1])
+                            actual_new_id = new_db_facts[idx].id
+                        except:
+                            actual_new_id = None
+                    else:
+                        actual_new_id = new_id
+                        
+                    if existing_id and actual_new_id:
+                        db_rel = models.Relationship(
+                            fact1_id=existing_id,
+                            fact2_id=actual_new_id,
+                            relationship_type=rel.get("relationship_type", "unknown"),
+                            explanation=rel.get("explanation", "")
+                        )
+                        db.add(db_rel)
             db.commit()
             
     except Exception as e:
@@ -167,3 +188,30 @@ def get_relationships(db: Session = Depends(database.get_db)):
 def get_documents(db: Session = Depends(database.get_db)):
     docs = db.query(models.Document).all()
     return [{"id": d.id, "filename": d.filename} for d in docs]
+
+@app.get("/api/failures")
+def get_failures(db: Session = Depends(database.get_db)):
+    failures = db.query(models.Failure).all()
+    result = []
+    for f in failures:
+        doc = db.query(models.Document).filter(models.Document.id == f.doc_id).first()
+        result.append({
+            "id": f.id,
+            "error_type": f.error_type,
+            "raw_output": f.raw_output,
+            "context": f.context,
+            "document": doc.filename if doc else "Unknown"
+        })
+    return result
+
+@app.post("/api/simulate-failure")
+def simulate_failure(db: Session = Depends(database.get_db)):
+    db_fail = models.Failure(
+        doc_id=None,
+        error_type="JSONDecodeError",
+        raw_output="Unterminated string starting at: line 1 column 15 (char 14)",
+        context="Failed to parse LLM relationship output as JSON."
+    )
+    db.add(db_fail)
+    db.commit()
+    return {"message": "Failure simulated"}
