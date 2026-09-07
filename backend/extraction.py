@@ -80,7 +80,7 @@ def analyze_relationships_with_llm(new_facts: list, existing_facts: list) -> lis
     Compare the New Facts against the Existing Facts. Identify if any New Fact:
     1. "corroborates": Directly supports or confirms an Existing Fact.
     2. "contradicts": Directly contradicts an Existing Fact (e.g., two completely different statements about the exact same thing in the exact same time period/unit).
-    3. "reconciled": Initially appears to contradict, but can be explained by time or context. For example: if a revenue figure is ₹27,805.75 million for Fiscal 2020 in one document, and ₹81,415 million for FY24 in another, this is an apparent contradiction explained by time/context, and MUST be flagged as "reconciled" (Case 3), not a genuine contradiction. Also consider units (e.g. millions vs billions) or scope (consolidated vs standalone).
+    3. "reconciled": Initially appears to contradict, but can be explained by time or context. For example: If Metric A is reported as $10M for FY20 and $50M for FY24, this is an apparent contradiction explained by differing time periods/scope and MUST be classified as "reconciled" rather than a genuine contradiction. Also consider units (e.g. millions vs billions) or scope (consolidated vs standalone).
     
     Existing Facts (ID: Statement):
     """

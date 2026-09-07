@@ -26,11 +26,12 @@ The system is built to ingest PDFs, dynamically extract numerical and semantic f
    ```
 
 ### Running the System
-1. Start the backend and frontend together:
+1. **(Optional)** If you want to evaluate the UI offline without your own Gemini API key, the repository comes with a pre-populated SQLite database (`facts.db`) containing the extracted facts and relationships from the `delhivery` starter dataset out of the box.
+2. Start the backend and frontend together:
    ```bash
    uvicorn backend.main:app --reload
    ```
-2. Open your browser and navigate to `http://127.0.0.1:8000/`.
+3. Open your browser and navigate to `http://127.0.0.1:8000/`.
 
 ## Video Demo
 [Insert Link to your 3-minute Video Demo Here]
@@ -53,7 +54,7 @@ The system is built to ingest PDFs, dynamically extract numerical and semantic f
 - *LLM Cost vs Precision*: To avoid hitting massive context windows or hallucination, I keep chunking simple for this prototype rather than building complex RAG pipelines. 
 
 ## Limitations and Next Steps
-1. **Layout and Extraction Failures**: As demonstrated in the failure case in the video, standard text parsers (like PyMuPDF) completely scramble complex dual-column financial tables and dense formatting. This results in the LLM receiving a wall of corrupted text, causing it to fail parsing entirely or hallucinate numbers. **Next step**: Integrate a Vision-Language Model (VLM) for layout-aware parsing, or use specialized OCR models (like LayoutLM) before passing text to Gemini.
+1. **Extraction and Reasoning Failure (Case 4)**: When parsing dense financial tables in `01-delhivery-prospectus-2022-excerpt.pdf` (e.g., page 23 multi-column restated balance sheets), PyMuPDF extracts text in reading order, merging column headers and associating metrics with the wrong year. The LLM extracted the restated loss as belonging to FY20 rather than FY19. We surfaced this under ambiguous extractions and flag tabular data with high uncertainty. **Next step**: Integrate a Vision-Language Model (VLM) for layout-aware parsing, or use specialized OCR models (like LayoutLM) before passing text to Gemini.
 2. **Large Document Handling**: The system currently limits text processing chunks to avoid LLM context overflow. Next step: Implement smart chunking or a full RAG (Retrieval-Augmented Generation) pipeline.
 3. **Fact Resolution**: If the LLM generates a hallucinated fact that doesn't trigger a hard JSON crash, the system doesn't automatically self-correct. Next step: Add a human-in-the-loop validation UI where users can edit/reject facts.
 
