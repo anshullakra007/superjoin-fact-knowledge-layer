@@ -18,7 +18,7 @@ The system is built to ingest PDFs, dynamically extract numerical and semantic f
    ```
 2. Install dependencies:
    ```bash
-   pip install fastapi uvicorn PyMuPDF google-genai sqlalchemy pydantic python-multipart
+   pip install -r requirements.txt
    ```
 3. Set your API Key in the environment (or in a `.env` file if you install `python-dotenv`):
    ```bash
