@@ -1,8 +1,8 @@
 # Fact Knowledge Layer
 
-Hello! This is my submission for Superjoin's Engineering Intern role.
+Hello! My name is Anshul Kumar, and this is my submission for the Engineering Intern role at Superjoin.
 
-The goal of this project was to build a system that moves beyond simple text ingestion and actively understands the content. This application extracts numerical and semantic facts from financial PDFs and acts as an automated analyst—cross-referencing those facts against existing data to discover corroborations, flag contradictions, and reconcile context-based discrepancies using LLMs.
+I built this project because I wanted to create a system that moves beyond just parsing text to actually *understanding* it. This Fact Knowledge Layer extracts raw numerical and semantic facts from dense PDFs, but more importantly, it acts as an automated analyst. It cross-references facts against its existing knowledge base to corroborate evidence, flag contradictions, and contextually reconcile discrepancies using Google's Gemini Flash model.
 
 ---
 
@@ -39,7 +39,7 @@ I have aimed to keep the setup as frictionless as possible. You will need:
 ---
 
 ## Video Demo
-[Insert Link to your 3-minute Video Demo Here]
+[▶️ Watch the 3-Minute Video Demo Here](https://drive.google.com/file/d/1kr6TCU2czAP10eXgPRZRCRZhHZwcBqLG/view?usp=sharing)
 
 ---
 
